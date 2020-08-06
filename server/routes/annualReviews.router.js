@@ -1,12 +1,13 @@
 const express = require('express');
 const pool = require('../modules/pool');
+const { rejectUnauthenticated } = require('../modules/authentication-middleware');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', rejectUnauthenticated, (req, res) => {
   // because of passport
   // req.user
-  const queryText = `SELECT annual_reviews.*, user.username, user.id as user_id FROM "annual_reviews"
-    JOIN "user" ON annual_reviews.employee_id = user.id;`
+  const queryText = `SELECT "annual_review".*, "user".username, "user".id as user_id FROM "annual_review"
+    JOIN "user" ON "annual_review".employee_id = "user".id;`
 
   pool.query(queryText)
     .then((dbResp) => {
